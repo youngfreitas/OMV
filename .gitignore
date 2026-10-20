@@ -10,3 +10,4 @@ playwright-report
 screenshots
 coverage
 backups
+e2e/.estado.json

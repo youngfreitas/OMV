@@ -47,3 +47,11 @@
 .pub-footer-grid p { margin: 4px 0 0; }
 .pub-footer-base { max-width: 1200px; margin: var(--espaco-6) auto 0; padding-top: var(--espaco-4); border-top: 1px solid var(--linha); }
 @media (max-width: 760px) { .pub-footer { padding: var(--espaco-6) var(--espaco-4); } .pub-footer-grid { grid-template-columns: 1fr; } }
+
+/* ---------- Autenticação ---------- */
+.auth-wrap { display: grid; place-items: start center; padding: var(--espaco-12) var(--espaco-4); min-height: 60vh; }
+.auth-card { width: min(460px, 100%); }
+.auth-titulo { font: 600 24px/32px var(--font-display); color: var(--texto-marca); margin-bottom: var(--espaco-2); }
+.form-pilha { display: flex; flex-direction: column; gap: var(--espaco-4); }
+.codigos-rec { display: grid; grid-template-columns: 1fr 1fr; gap: var(--espaco-2); font-family: ui-monospace, monospace; background: var(--fundo-rebaixado); padding: var(--espaco-4); border-radius: var(--raio-md); }
+.qr { display: block; margin: 0 auto; border-radius: var(--raio-md); background: #fff; padding: 8px; }
