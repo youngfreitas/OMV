@@ -1,0 +1,6 @@
+.next
+node_modules
+db/migrations
+pnpm-lock.yaml
+public/marca
+src/lib/geo/contorno-ubatuba.json

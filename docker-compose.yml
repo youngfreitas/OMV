@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: omv
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-omv}
+      POSTGRES_DB: omv
+    ports: ['5432:5432']
+    volumes: ['omv-db:/var/lib/postgresql/data']
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U omv']
+      interval: 5s
+      retries: 10
+  app:
+    build: .
+    depends_on:
+      db: { condition: service_healthy }
+    env_file: .env
+    environment:
+      DATABASE_URL: postgres://omv:${POSTGRES_PASSWORD:-omv}@db:5432/omv
+    ports: ['3000:3000']
+    profiles: ['app']
+volumes:
+  omv-db:
