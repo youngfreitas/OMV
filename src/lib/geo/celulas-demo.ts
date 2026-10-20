@@ -16,7 +16,7 @@ export function gerarCelulasDemo(contorno: ColecaoGeo, passo = 0.045): ColecaoGe
     for (let x = x0 - h + (row % 2 ? dx / 2 : 0); x <= x1 + h; x += dx) {
       const vertices: Array<[number, number]> = [];
       for (let k = 0; k < 6; k++) {
-        const ang = (Math.PI / 180) * (60 * k - 30);
+        const ang = (Math.PI / 180) * (30 - 60 * k); // sentido horário (convenção do d3-geo)
         vertices.push([x + h * Math.cos(ang), y + h * Math.sin(ang)]);
       }
       const dentro = [[x, y] as [number, number], ...vertices].some((p) =>

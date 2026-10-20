@@ -148,6 +148,8 @@ export type GeoPublica = {
   oficial: boolean;
   fonte: string;
   aviso?: string;
+  /** Contorno do município (recorte e moldura do mapa). */
+  contorno: ColecaoGeo;
 };
 
 export async function geoPublico(): Promise<GeoPublica> {
@@ -160,15 +162,16 @@ export async function geoPublico(): Promise<GeoPublica> {
         const b = bs.find((x) => x.geoFeatureId === String(f.properties?.id ?? f.id));
         return { ...f, properties: { id: b?.id ?? String(f.properties?.id ?? f.id), nome: b?.nome ?? String(f.properties?.nome ?? ''), codigo: b?.codigo } };
       });
-      return { geojson: { ...gj, features }, tipo: 'bairros', oficial: base.oficial, fonte: base.fonte };
+      return { geojson: { ...gj, features }, tipo: 'bairros', oficial: base.oficial, fonte: base.fonte, contorno: CONTORNO_MUNICIPIO };
     }
-    return { geojson: CONTORNO_MUNICIPIO, tipo: 'municipio', oficial: CONTORNO_OFICIAL, fonte: FONTE_CONTORNO, aviso: 'A base oficial de bairros ainda não foi carregada: o mapa mostra apenas o contorno do município.' };
+    return { geojson: CONTORNO_MUNICIPIO, tipo: 'municipio', oficial: CONTORNO_OFICIAL, fonte: FONTE_CONTORNO, contorno: CONTORNO_MUNICIPIO, aviso: 'A base oficial de bairros ainda não foi carregada: o mapa mostra apenas o contorno do município.' };
   }
   return {
     geojson: gerarCelulasDemo(CONTORNO_MUNICIPIO),
     tipo: 'demonstrativa',
     oficial: false,
     fonte: 'Células hexagonais demonstrativas sobre o contorno do município.',
+    contorno: CONTORNO_MUNICIPIO,
     aviso: 'As células são demonstrativas e não representam bairros. Dados fictícios.',
   };
 }

@@ -1,4 +1,5 @@
 import { geoMercator, geoPath } from 'd3-geo';
+import { orientarParaD3 } from './orientacao';
 import type { ColecaoGeo } from './tipos';
 
 export type CaminhoSvg = { id: string; nome: string; d: string; cx: number; cy: number };
@@ -11,6 +12,9 @@ export function projetar(
   enquadrar: ColecaoGeo = colecao,
   margem = 12,
 ): CaminhoSvg[] {
+  const orientar = (c: ColecaoGeo): ColecaoGeo => ({ ...c, features: c.features.map((f) => ({ ...f, geometry: orientarParaD3(f.geometry) })) });
+  colecao = orientar(colecao);
+  enquadrar = enquadrar === colecao ? colecao : orientar(enquadrar);
   const proj = geoMercator().fitExtent(
     [
       [margem, margem],

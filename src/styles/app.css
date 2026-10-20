@@ -72,3 +72,22 @@
 .grafico summary { cursor: pointer; color: var(--texto-marca); }
 .omv-filtros { display: flex; flex-wrap: wrap; gap: var(--espaco-3); align-items: flex-end; }
 .omv-filtros .omv-field { min-width: 180px; }
+
+/* ---------- Mapa público ---------- */
+.mapa-wrap { display: flex; flex-direction: column; gap: var(--espaco-4); }
+.mapa-grade { display: grid; grid-template-columns: 1fr 320px; gap: var(--espaco-6); align-items: start; }
+@media (max-width: 900px) { .mapa-grade { grid-template-columns: 1fr; } }
+.mapa-fig { margin: 0; position: relative; }
+.mapa-ferramentas { position: absolute; top: var(--espaco-4); right: var(--espaco-4); display: flex; gap: var(--espaco-2); z-index: 2; }
+.mapa-svg { width: 100%; height: auto; display: block; touch-action: pan-y; cursor: grab; background: var(--fundo-rebaixado); border-radius: var(--raio-md); }
+.mapa-area { stroke: var(--linha-forte); cursor: pointer; transition: fill-opacity .15s; }
+.mapa-area:hover { fill-opacity: .85; }
+.mapa-area.ativo { stroke: var(--rosa); }
+.mapa-area:focus-visible { outline: 3px solid var(--foco); outline-offset: 1px; box-shadow: none; }
+.mapa-legenda { display: flex; align-items: center; gap: var(--espaco-2); flex-wrap: wrap; margin-top: var(--espaco-3); }
+.mapa-chip { width: 28px; height: 14px; border-radius: 3px; border: 1px solid var(--linha-forte); display: inline-block; }
+.mapa-chip-supr { background: repeating-linear-gradient(45deg, var(--fundo-rebaixado) 0 4px, var(--linha-forte) 4px 6px); }
+.mapa-lateral h2 { font: 600 18px/26px var(--font-display); }
+.mapa-lista { list-style: none; padding: 0; margin: 0; display: grid; gap: var(--espaco-1); font-size: 14px; }
+.mapa-notas { padding-left: 18px; margin: 0; }
+.mapa-abas { border-bottom: 1px solid var(--linha); gap: 0; }
