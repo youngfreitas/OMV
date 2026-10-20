@@ -15,6 +15,13 @@
       "when": 1792525248738,
       "tag": "0001_auditoria_append_only",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792526027276,
+      "tag": "0002_protocolo_seq",
+      "breakpoints": true
     }
   ]
 }

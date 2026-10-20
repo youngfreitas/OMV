@@ -1,0 +1,1 @@
+CREATE SEQUENCE IF NOT EXISTS protocolo_seq START 1;

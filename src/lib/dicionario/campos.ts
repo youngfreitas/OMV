@@ -57,6 +57,22 @@ export const CAMPOS_ENVIO: CampoDef[] = [
 /** Campos de cada linha (registro agregado). */
 export const CAMPOS_LINHA: CampoDef[] = [
   {
+    chave: 'periodo_inicio',
+    rotulo: 'Início do período',
+    tipo: 'data',
+    obrigatorio: true,
+    ajuda: 'Primeiro dia do período da linha (dd/mm/aaaa ou aaaa-mm-dd). O período deve estar dentro de um único mês.',
+    exemplo: '01/03/2026',
+  },
+  {
+    chave: 'periodo_fim',
+    rotulo: 'Fim do período',
+    tipo: 'data',
+    obrigatorio: true,
+    ajuda: 'Último dia do período da linha. Não pode ser anterior ao início, estar em outro mês nem no futuro.',
+    exemplo: '31/03/2026',
+  },
+  {
     chave: 'bairro',
     rotulo: 'Bairro',
     tipo: 'dominio',

@@ -55,3 +55,10 @@
 .form-pilha { display: flex; flex-direction: column; gap: var(--espaco-4); }
 .codigos-rec { display: grid; grid-template-columns: 1fr 1fr; gap: var(--espaco-2); font-family: ui-monospace, monospace; background: var(--fundo-rebaixado); padding: var(--espaco-4); border-radius: var(--raio-md); }
 .qr { display: block; margin: 0 auto; border-radius: var(--raio-md); background: #fff; padding: 8px; }
+
+.etapas-imp { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--espaco-2); }
+.etapas-imp li { display: flex; gap: var(--espaco-3); align-items: flex-start; font-size: 14px; }
+.etapas-imp li[data-estado="ok"] .omv-icon { color: var(--sucesso); }
+.etapas-imp li[data-estado="alerta"] .omv-icon { color: var(--pendente); }
+.etapas-imp li[data-estado="erro"] .omv-icon { color: var(--erro); }
+.etapas-imp li[data-estado="pendente"] { color: var(--texto-suave); }
