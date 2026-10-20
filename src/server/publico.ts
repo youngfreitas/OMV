@@ -79,7 +79,9 @@ export async function consultarIndicadoresPublicos(q: {
   periodo?: string;
   filtros?: string[]; // dimensões adicionais solicitadas (para checar combinações)
 }): Promise<RespostaIndicadores> {
-  const demo = modoDemo();
+  // Publicação real sempre tem precedência; a fonte fictícia só é usada no modo demonstração e sem publicação.
+  const pubReal = await publicacaoAtual();
+  const demo = modoDemo() && !pubReal;
   const vazio = (mensagem?: string): RespostaIndicadores => ({ modo: demo ? 'demo' : 'vazio', disponivel: false, mensagem, unidades: [], periodos: [], celulas: [], notas: NOTAS });
 
   let indicadores: Indicador[];
@@ -93,7 +95,7 @@ export async function consultarIndicadoresPublicos(q: {
     nomes = f.nomes;
     publicacao = { versao: null, publicadaEm: null };
   } else {
-    const pub = await publicacaoAtual();
+    const pub = pubReal;
     if (!pub) return vazio('Ainda não há indicadores publicados.');
     const linhas = await db.select().from(indicadoresPublicados).where(eq(indicadoresPublicados.publicacaoId, pub.id));
     indicadores = linhas.map((l) => ({ cubo: l.cubo as Cubo, periodo: l.periodo, unidade: l.unidade, territorioTipo: l.territorioTipo as Indicador['territorioTipo'], territorioId: l.territorioId, dimensao: l.dimensao, valor: l.valor, suprimido: l.suprimido, motivo: l.motivo as Indicador['motivo'] }));
@@ -153,7 +155,8 @@ export type GeoPublica = {
 };
 
 export async function geoPublico(): Promise<GeoPublica> {
-  if (!modoDemo()) {
+  const [bairrosAtiva] = await db.select({ id: basesGeograficas.id }).from(basesGeograficas).where(and(eq(basesGeograficas.ativa, true), eq(basesGeograficas.tipo, 'bairros'))).limit(1);
+  if (!modoDemo() || bairrosAtiva) {
     const [base] = await db.select().from(basesGeograficas).where(and(eq(basesGeograficas.ativa, true), eq(basesGeograficas.tipo, 'bairros'))).limit(1);
     if (base) {
       const bs = await db.select({ codigo: bairros.codigo, nome: bairros.nome, geoFeatureId: bairros.geoFeatureId, id: bairros.id }).from(bairros);
