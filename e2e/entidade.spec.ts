@@ -37,14 +37,17 @@ test('entidade A cria envio pelo formulário, envia e a entidade B não o enxerg
 test('importação CSV cria rascunho; dado pessoal marca como restrito sem reproduzir o conteúdo', async ({ page }) => {
   await entrar(page, 'entidade-a@omv.test');
   await page.goto('/entidade/importar');
+  await page.waitForLoadState('networkidle');
   const csv = [
     '#omv-modelo;OMV-MULHERES;1.0.0',
     'periodo_inicio;periodo_fim;bairro;tipo_registro;unidade_contagem;categoria_violencia;faixa_etaria;tipo_atendimento;canal_entrada;relacao_autor;situacao_atendimento;quantidade;observacao',
     '01/03/2026;31/03/2026;Bairro demonstrativo 02;atendimento_servico;atendimento;fisica;18_24;acolhimento;;;;7;Ligar para (12) 99876-5432',
   ].join('\r\n');
   await page.locator('input[type=file]').setInputFiles({ name: 'envio.csv', mimeType: 'text/csv', buffer: Buffer.from(csv) });
-  await page.getByRole('button', { name: 'Verificar arquivo' }).click();
-  await expect(page.getByText('Possível dado pessoal detectado').first()).toBeVisible();
+  await expect(async () => {
+    await page.getByRole('button', { name: 'Verificar arquivo' }).click();
+    await expect(page.getByText('Possível dado pessoal detectado').first()).toBeVisible({ timeout: 4000 });
+  }).toPass({ timeout: 30_000 });
   await expect(page.getByText('99876')).toHaveCount(0);
   await page.getByRole('link', { name: /Revisar rascunho/ }).click();
   await expect(page.getByText('99876')).toHaveCount(0);

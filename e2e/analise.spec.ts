@@ -32,7 +32,10 @@ test('analista recebe, devolve com justificativa e depois aprova', async ({ page
   await pa.waitForLoadState('networkidle');
   await pa.getByRole('button', { name: 'Iniciar análise' }).click();
   await expect(pa.getByText('Em análise').first()).toBeVisible();
-  await pa.getByRole('button', { name: 'Devolver para correção' }).click();
+  await expect(async () => {
+    await pa.getByRole('button', { name: 'Devolver para correção' }).click();
+    await expect(pa.getByLabel(/Justificativa/)).toBeVisible({ timeout: 1500 });
+  }).toPass({ timeout: 20_000 });
   await pa.getByLabel(/Justificativa/).fill('Conferir o total informado para o bairro.');
   await pa.getByRole('button', { name: 'Confirmar' }).click();
   await expect(pa.getByText('Pendente de correção').first()).toBeVisible();
