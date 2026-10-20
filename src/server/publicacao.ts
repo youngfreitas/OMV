@@ -1,14 +1,15 @@
 import 'server-only';
 import { and, desc, eq, gt, or, sql } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
-import { bairros, indicadoresPublicados, publicacoes, regioes, registrosAprovados } from '@/lib/db/schema';
+import { indicadoresPublicados, publicacoes, registrosAprovados } from '@/lib/db/schema';
 import { registrar } from '@/lib/auditoria';
 import { ErroNegocio } from '@/lib/auth/erros';
 import { exigir } from '@/lib/auth/guards';
 import type { UsuarioAtual } from '@/lib/auth/usuario';
 import { calcularIndicadores } from '@/lib/publicacao/motor';
-import type { DominiosCubos, RegistroAgregavel, TerritorioCfg } from '@/lib/publicacao/tipos';
-import { carregarDominios, configuracao } from '@/server/cadastros';
+import type { DominiosCubos, RegistroAgregavel } from '@/lib/publicacao/tipos';
+import { configuracao } from '@/server/cadastros';
+import { carregarFonte, type FonteBase } from '@/server/fonte';
 import { notificarPorPermissao } from '@/server/notificacoes';
 
 export const ID_MUNICIPIO = '3555406';
@@ -23,37 +24,26 @@ export async function parametrosDaPublicacao() {
   return { k, complementar, generalizar, maxDimensoes: maxDim };
 }
 
-/** Agregação + supressão sobre os registros aprovados ATIVOS (usada pela publicação e pelo dashboard interno). */
-export async function calcularSobreBaseAnalitica() {
-  const [regs, bs, rs, dominios, params] = await Promise.all([
-    db.select().from(registrosAprovados).where(eq(registrosAprovados.ativo, true)),
-    db.select().from(bairros).where(eq(bairros.ativo, true)),
-    db.select().from(regioes).where(eq(regioes.ativo, true)),
-    carregarDominios(),
-    parametrosDaPublicacao(),
-  ]);
-  const registros: RegistroAgregavel[] = regs.map((r) => ({
+/** Agregação + supressão estatística sobre os registros aprovados ATIVOS (publicação e dashboard interno). */
+export async function calcularSobreBaseAnalitica(fonteExistente?: FonteBase) {
+  const [fonte, params] = await Promise.all([fonteExistente ?? carregarFonte({ permitirDemo: false }), parametrosDaPublicacao()]);
+  const registros: RegistroAgregavel[] = fonte.registros.map((r) => ({
     periodo: r.periodo,
     bairroId: r.bairroId,
     regiaoId: r.regiaoId,
     tipoRegistro: r.tipoRegistro,
-    unidade: r.unidadeContagem,
-    categoria: r.categoriaViolencia,
-    faixa: r.faixaEtaria,
+    unidade: r.unidade,
+    categoria: r.categoria,
+    faixa: r.faixa,
     quantidade: r.quantidade,
   }));
-  const territorio: TerritorioCfg = {
-    municipioId: ID_MUNICIPIO,
-    bairros: bs.map((b) => ({ id: b.id, regiaoId: b.regiaoId })),
-    regioes: rs.map((r) => ({ id: r.id })),
-  };
   const dom: DominiosCubos = {
-    categoria: (dominios.categoria_violencia ?? []).map((i) => i.codigo),
-    faixa: (dominios.faixa_etaria ?? []).map((i) => i.codigo),
-    tipo: (dominios.tipo_registro ?? []).map((i) => i.codigo),
+    categoria: (fonte.dominios.categoria_violencia ?? []).map((i) => i.codigo),
+    faixa: (fonte.dominios.faixa_etaria ?? []).map((i) => i.codigo),
+    tipo: (fonte.dominios.tipo_registro ?? []).map((i) => i.codigo),
   };
-  const r = calcularIndicadores(registros, territorio, dom, { k: params.k, complementar: params.complementar });
-  return { ...r, params, totalRegistros: regs.length };
+  const r = calcularIndicadores(registros, fonte.territorio, dom, { k: params.k, complementar: params.complementar });
+  return { ...r, params, totalRegistros: registros.length, fonte };
 }
 
 export async function publicacaoAtual() {

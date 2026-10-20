@@ -62,3 +62,13 @@
 .etapas-imp li[data-estado="alerta"] .omv-icon { color: var(--pendente); }
 .etapas-imp li[data-estado="erro"] .omv-icon { color: var(--erro); }
 .etapas-imp li[data-estado="pendente"] { color: var(--texto-suave); }
+
+/* ---------- Gráficos ---------- */
+.grafico { margin: 0; }
+.grafico h3 { font: 600 16px/24px var(--font-display); }
+.grafico figcaption { margin-bottom: var(--espaco-3); }
+.grafico-fonte { margin: var(--espaco-2) 0; }
+.grafico details { margin-top: var(--espaco-2); font-size: 13px; }
+.grafico summary { cursor: pointer; color: var(--texto-marca); }
+.omv-filtros { display: flex; flex-wrap: wrap; gap: var(--espaco-3); align-items: flex-end; }
+.omv-filtros .omv-field { min-width: 180px; }
