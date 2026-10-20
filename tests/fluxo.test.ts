@@ -31,7 +31,10 @@ async function enviar(u: UsuarioAtual, linhas = [linha()]) {
 
 beforeAll(async () => {
   await resetarBanco();
-  [entA, entB, analista, gestor] = await Promise.all(['entidade-a', 'entidade-b', 'analista', 'gestor'].map((e) => usuarioPorEmail(`${e}@omv.test`)));
+  entA = await usuarioPorEmail('entidade-a@omv.test');
+  entB = await usuarioPorEmail('entidade-b@omv.test');
+  analista = await usuarioPorEmail('analista@omv.test');
+  gestor = await usuarioPorEmail('gestor@omv.test');
 });
 
 describe('fluxo de submissões', () => {

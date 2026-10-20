@@ -29,7 +29,7 @@ function mulberry32(a: number) {
   };
 }
 
-let cache: RegistroDemo[] | null = null;
+const cache = new Map<number, RegistroDemo[]>();
 
 export function celulaDemoNome(i: number) {
   return `Célula demonstrativa ${String(i).padStart(2, '0')}`;
@@ -41,7 +41,8 @@ export function regiaoDaCelula(i: number) {
 
 /** Gera 12 meses × n células × categorias. `nCelulas` ajusta-se à malha demonstrativa. */
 export function registrosDemo(nCelulas = 24, mesFinal = '2026-09'): RegistroDemo[] {
-  if (cache && cache.length) return cache;
+  const emCache = cache.get(nCelulas);
+  if (emCache) return emCache;
   const rnd = mulberry32(20260920);
   const [ano, mes] = mesFinal.split('-').map(Number) as [number, number];
   const meses: string[] = [];
@@ -73,6 +74,46 @@ export function registrosDemo(nCelulas = 24, mesFinal = '2026-09'): RegistroDemo
       }
     }
   }
-  cache = out;
+  cache.set(nCelulas, out);
   return out;
+}
+
+import type { RegistroAgregavel, TerritorioCfg } from '../publicacao/tipos';
+
+export const ID_REGIAO_DEMO = (i: number) => `demo-r${(i % REGIOES_DEMO.length) + 1}`;
+export const ID_CELULA_DEMO = (i: number) => `demo-${String(i).padStart(3, '0')}`;
+
+/** Território demonstrativo: células hexagonais (NÃO são bairros) agrupadas em 3 regiões fictícias. */
+export function territorioDemo(nCelulas: number): {
+  cfg: TerritorioCfg;
+  nomes: Map<string, { nome: string; tipo: 'bairro' | 'regiao' }>;
+} {
+  const nomes = new Map<string, { nome: string; tipo: 'bairro' | 'regiao' }>();
+  const regioes = REGIOES_DEMO.map((nome, k) => {
+    const id = `demo-r${k + 1}`;
+    nomes.set(id, { nome, tipo: 'regiao' });
+    return { id };
+  });
+  const bairros = Array.from({ length: nCelulas }, (_, k) => {
+    const i = k + 1;
+    nomes.set(ID_CELULA_DEMO(i), { nome: celulaDemoNome(i), tipo: 'bairro' });
+    return { id: ID_CELULA_DEMO(i), regiaoId: ID_REGIAO_DEMO(i) };
+  });
+  return { cfg: { municipioId: '3555406', bairros, regioes }, nomes };
+}
+
+export function registrosDemoAgregaveis(nCelulas: number): RegistroAgregavel[] {
+  return registrosDemo(nCelulas).map((r) => {
+    const i = Number(r.celula.replace(/\D/g, ''));
+    return {
+      periodo: r.periodo,
+      bairroId: ID_CELULA_DEMO(i),
+      regiaoId: ID_REGIAO_DEMO(i),
+      tipoRegistro: r.tipoRegistro,
+      unidade: r.unidade,
+      categoria: r.categoria,
+      faixa: r.faixa,
+      quantidade: r.quantidade,
+    };
+  });
 }

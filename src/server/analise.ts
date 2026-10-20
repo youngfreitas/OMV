@@ -23,6 +23,7 @@ import type { LinhaNormalizada } from '@/lib/validacao/tipos';
 import { configuracao } from '@/server/cadastros';
 import { notificar } from '@/server/notificacoes';
 import { obterComAcesso } from '@/server/submissoes';
+import { republicarPorRetirada } from '@/server/publicacao';
 
 const FILA: Status[] = ['aguardando_analise', 'reenviado', 'em_analise', 'pendente_correcao', 'aprovado', 'rejeitado', 'retirado'];
 
@@ -183,6 +184,7 @@ export async function executarAcao(u: UsuarioAtual, id: string, acao: AcaoFluxo,
   if (acao === 'aprovar') await notificarEntidade(s.entidadeId, { tipo: 'envio_aprovado', titulo: `Envio ${s.protocolo} aprovado`, link });
   if (acao === 'devolver') await notificarEntidade(s.entidadeId, { tipo: 'envio_devolvido', titulo: `Envio ${s.protocolo}: correção solicitada`, texto: 'Abra o envio para ver as pendências.', link });
   if (acao === 'rejeitar') await notificarEntidade(s.entidadeId, { tipo: 'envio_rejeitado', titulo: `Envio ${s.protocolo} rejeitado`, link });
+  if (acao === 'retirar') await republicarPorRetirada(u.id);
   if (acao === 'retirar') await notificarEntidade(s.entidadeId, { tipo: 'envio_retirado', titulo: `Envio ${s.protocolo} retirado da base analítica`, link });
   return { status: destino };
 }
