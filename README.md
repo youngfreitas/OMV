@@ -20,6 +20,6 @@ Verificação: `pnpm typecheck && pnpm lint && pnpm test && pnpm test:e2e`.
 
 ## Documentação
 
-[`docs/`](./docs): PLANEJAMENTO · ARQUITETURA · PERMISSOES · FLUXOS · METODOLOGIA · LGPD · INSTALACAO · DICIONARIO-DE-DADOS · PENDENCIAS-INSTITUCIONAIS.
+[`docs/`](./docs): PLANEJAMENTO · ARQUITETURA · PERMISSOES · FLUXOS · METODOLOGIA · LGPD · INSTALACAO · DICIONARIO-DE-DADOS · PENDENCIAS-INSTITUCIONAIS · PLANO-BASE-TERRITORIAL.
 
 Design: tokens e componentes do design system “OMV” (`design/tokens.json` → `src/styles/tokens.css`; componentes em `src/components/ds`). Logos oficiais em `public/marca/` — nunca redesenhar.
