@@ -1,3 +1,4 @@
+import './env';
 /**
  * Expurgo por retenção (agendar diariamente, ex.: cron):
  *  - arquivos originais importados (cifrados) vencidos;
