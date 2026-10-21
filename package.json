@@ -20,6 +20,7 @@
     "db:migrate": "tsx scripts/migrar.ts",
     "db:seed": "tsx scripts/seed.ts",
     "db:seed:dev": "tsx scripts/seed.ts --dev",
+    "db:dev:senhas": "tsx scripts/redefinir-senhas-dev.ts",
     "geo:ibge": "tsx scripts/baixar-contorno-ibge.ts",
     "retencao": "tsx scripts/expurgo-retencao.ts",
     "docs:dicionario": "tsx scripts/gerar-dicionario.ts"
