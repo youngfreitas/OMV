@@ -7,7 +7,8 @@ const config: NextConfig = {
     serverActions: {
       // Atrás de proxies (ex.: GitHub Codespaces) o Origin difere do Host; liste aqui as origens confiáveis.
       allowedOrigins: [
-        ...(process.env.CODESPACES === 'true' ? ['*.app.github.dev'] : []),
+        // Em desenvolvimento (inclui GitHub Codespaces) aceita o domínio de encaminhamento de portas.
+        ...(process.env.NODE_ENV !== 'production' ? ['*.app.github.dev', 'localhost:3000'] : []),
         ...(process.env.OMV_ORIGENS_PERMITIDAS?.split(',').map((o) => o.trim()).filter(Boolean) ?? []),
       ],
     },
