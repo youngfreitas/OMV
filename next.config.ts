@@ -3,6 +3,15 @@ import type { NextConfig } from 'next';
 const config: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
+  experimental: {
+    serverActions: {
+      // Atrás de proxies (ex.: GitHub Codespaces) o Origin difere do Host; liste aqui as origens confiáveis.
+      allowedOrigins: [
+        ...(process.env.CODESPACES === 'true' ? ['*.app.github.dev'] : []),
+        ...(process.env.OMV_ORIGENS_PERMITIDAS?.split(',').map((o) => o.trim()).filter(Boolean) ?? []),
+      ],
+    },
+  },
   serverExternalPackages: ['@node-rs/argon2', 'pdfkit', 'exceljs'],
   async headers() {
     const prod = process.env.NODE_ENV === 'production';
