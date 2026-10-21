@@ -73,7 +73,7 @@ function rotuloDimensao(dimensao: string, dominios: Record<string, Array<{ codig
   return dominios[dom]?.find((i) => i.codigo === cod)?.rotulo ?? cod;
 }
 
-export async function consultarIndicadoresPublicos(q: {
+async function consultarIndicadoresPublicosInterno(q: {
   cubo?: string;
   unidade?: string;
   periodo?: string;
@@ -144,6 +144,16 @@ export async function consultarIndicadoresPublicos(q: {
   return { ...cabecalho, disponivel: true, celulas };
 }
 
+/** Páginas públicas nunca quebram por falha de banco: registram o erro e mostram o estado vazio. */
+export async function consultarIndicadoresPublicos(q: Parameters<typeof consultarIndicadoresPublicosInterno>[0]): Promise<RespostaIndicadores> {
+  try {
+    return await consultarIndicadoresPublicosInterno(q);
+  } catch (e) {
+    console.error('Falha ao consultar indicadores públicos (o banco foi migrado? rode `pnpm db:migrate`)', e);
+    return { modo: modoDemo() ? 'demo' : 'vazio', disponivel: false, mensagem: 'Indicadores temporariamente indisponíveis.', unidades: [], periodos: [], celulas: [], notas: NOTAS };
+  }
+}
+
 export type GeoPublica = {
   geojson: ColecaoGeo;
   tipo: 'bairros' | 'demonstrativa' | 'municipio';
@@ -155,7 +165,12 @@ export type GeoPublica = {
 };
 
 export async function geoPublico(): Promise<GeoPublica> {
-  const [bairrosAtiva] = await db.select({ id: basesGeograficas.id }).from(basesGeograficas).where(and(eq(basesGeograficas.ativa, true), eq(basesGeograficas.tipo, 'bairros'))).limit(1);
+  let bairrosAtiva: { id: string } | undefined;
+  try {
+    [bairrosAtiva] = await db.select({ id: basesGeograficas.id }).from(basesGeograficas).where(and(eq(basesGeograficas.ativa, true), eq(basesGeograficas.tipo, 'bairros'))).limit(1);
+  } catch (e) {
+    console.error('Falha ao ler a base geográfica (rode `pnpm db:migrate`)', e);
+  }
   if (!modoDemo() || bairrosAtiva) {
     const [base] = await db.select().from(basesGeograficas).where(and(eq(basesGeograficas.ativa, true), eq(basesGeograficas.tipo, 'bairros'))).limit(1);
     if (base) {
